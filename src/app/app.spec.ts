@@ -1,7 +1,6 @@
 
-
 describe('App component', () => {  
   it('dummy test', () => {
-    expect(true).toBeTrue();
+    expect(true).toBeTruthy();
   });
 });

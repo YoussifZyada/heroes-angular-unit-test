@@ -1,48 +1,35 @@
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
 
-import { Ihero }         from '../../models/ihero';
-import { HeroService }  from '../../services/hero-service/hero.service';
+import { IHero } from '../../models/ihero';
+import { HeroService } from '../../services/hero-service/hero.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-hero-detail',
-    imports: [FormsModule, CommonModule],
-    templateUrl: './hero-detail.html',
-    styleUrls: ['./hero-detail.css']
+  selector: 'app-hero-detail',
+  imports: [FormsModule, CommonModule],
+  templateUrl: './hero-detail.html',
+  styleUrls: ['./hero-detail.css'],
 })
 export class HeroDetail implements OnInit {
-  @Input() hero!: Ihero;
+  private route = inject(ActivatedRoute);
 
-  constructor(
-    private route: ActivatedRoute,
-    private heroService: HeroService,
-    private location: Location,
-    private cdr: ChangeDetectorRef,
-  ) {
+  private heroService = inject(HeroService);
+  private location = inject(Location);
 
-    const id = +this.route.snapshot.paramMap.get('id')!;
-    this.heroService.getHero(id)
-    .subscribe(hero =>{
-      this.hero = hero
-      this.cdr.detectChanges()
-      });
-  }
-  
+  hero = signal<IHero | null>(null);
+
   ngOnInit(): void {
-    this.getHero();
-  }
-  
-  getHero(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.heroService.getHero(id).subscribe((hero) => this.hero.set(hero));
   }
 
   goBack(): void {
     this.location.back();
   }
 
- save(): void {
-    this.heroService.updateHero(this.hero)
-      .subscribe(() => this.goBack());
+  save(): void {
+    this.heroService.updateHero(this.hero()!).subscribe(() => this.goBack());
   }
 }

@@ -1,17 +1,36 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
-  
-  messages: {id:number,message:string}[] = [];
 
-  add(message: string) {
-    this.messages.push({id:Math.floor(Math.random()*1000),message});
+  /**
+   * Signal of array of messages.   
+   */
+   messages = signal< {id:string,message:string}[]>([]);
+
+  /**
+   * Adds a new message to the store.
+   *
+   *
+   * @param message Text of the message to add.
+   */
+  add(message: string): void {
+    this.messages.update(messages => [
+      ...messages,
+      {
+        id: crypto.randomUUID(),
+        message
+      }
+    ]);
   }
 
-  clear() {
-    this.messages = [];
+  /**
+   * Removes all messages.
+   */
+  clear(): void {
+    this.messages.set([]);
   }
 }

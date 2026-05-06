@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
-import { Ihero } from '../../models/ihero';
+import { IHero } from '../../models/ihero';
 
 @Injectable({
   providedIn: 'root',
@@ -17,17 +17,17 @@ export class HeroServiceForLab {
   constructor(private http: HttpClient) {}
 
   /** GET hero by id. Will 404 if id not found */
-  getHero(id: number): Observable<Ihero> {
+  getHero(id: number): Observable<IHero> {
     const url = `${this.heroesUrl}/${id}`;
-    return this.http.get<Ihero>(url);
+    return this.http.get<IHero>(url);
   }
 
   /** PUT: update the hero on the server */
-  updateHero(hero: Ihero): Observable<Ihero> {
+  updateHero(hero: IHero): Observable<IHero> {
     return this.http.put(
       `${this.heroesUrl}/${hero.id}`,
       hero,
       this.httpOptions,
-    ) as Observable<Ihero>;
+    ) as Observable<IHero>;
   }
 }

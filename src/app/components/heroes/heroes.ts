@@ -1,9 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {  Component, inject, OnInit, signal, Signal } from '@angular/core';
 
-import { Ihero } from '../../models/ihero';
+import { IHero } from '../../models/ihero';
 import { HeroService } from '../../services/hero-service/hero.service';
 import { Hero} from '../hero/hero';
-
 @Component({
     selector: 'app-heroes',
     imports: [Hero],
@@ -11,39 +10,39 @@ import { Hero} from '../hero/hero';
     styleUrls: ['./heroes.css']
 })
 export class Heroes implements OnInit {
-  heroes: Ihero[];
-
-  constructor(
-    private heroService: HeroService,
-    private cdr: ChangeDetectorRef,
-  ) { 
-    this.heroes=[]
-  }
+  heroes=signal<IHero[]>([])
+  
+  private heroService= inject( HeroService)
+  
 
   ngOnInit() {
     this.getHeroes()    
   }
   
   getHeroes(): void {
-    this.heroService.getHeroes()
-    .subscribe(heroes =>{ 
-      this.heroes = heroes
-      this.cdr.detectChanges()
-    });
+     this.heroService.getHeroes().subscribe({next:(data)=>{
+      this.heroes.set(data)
+    }})
+    ;
   }
 
   add(name: string,strength:number = 11): void {
     name = name.trim();
     if (!name) { return; }
-    this.heroService.addHero({ name, strength } as Ihero)
-      .subscribe(hero => {
-        this.heroes.push(hero);
-      });
+    
+      this.heroService.addHero({ name, strength } as IHero).subscribe({next:(data)=>{
+        console.log(data);
+        
+      }})
   }
 
-  delete(hero: Ihero): void {
-    this.heroes = this.heroes.filter(h => h.id !== hero.id);
-    this.heroService.deleteHero(hero)
+  delete(hero: IHero): void {
+    this.heroService.deleteHero(hero).subscribe({next:(data)=>{
+        console.log(data);
+        
+      }})
   }
 
 }
+
+

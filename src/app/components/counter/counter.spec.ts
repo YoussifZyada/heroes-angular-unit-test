@@ -1,58 +1,46 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { Counter } from "./counter";
-import { provideZonelessChangeDetection } from "@angular/core";
+import {Counter} from "./counter"
 import { By } from "@angular/platform-browser";
-
 describe('counter component: ', () => {
-  let fixture:ComponentFixture<Counter>,component:Counter
-  beforeEach(()=>{
-    TestBed.configureTestingModule({
-      imports:[Counter],
-      providers:[
-        provideZonelessChangeDetection()
-      ]
-    })
-    fixture=TestBed.createComponent(Counter)
-    component=fixture.componentInstance
-  })
-  it('should create component', () => {
-    expect(component).toBeDefined();
-  });
-  it('should render counter=0', () => {
+  let fixture:ComponentFixture<Counter>
+  let component:Counter
+  beforeEach(/* async */ ()=>{
+   /* await */ TestBed.configureTestingModule({
+      imports:[Counter]
+    })/* .compileComponents() */
 
-    expect(component.counter).toBe(0)
-    //access p tag in template
-    fixture.detectChanges()
-    let p= fixture.nativeElement.querySelector("p")
-    expect(p.textContent).toContain("0");
+   fixture= TestBed.createComponent(Counter)
+    component= fixture.componentInstance
+  })
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
-  it("should increase counter when click btn + then render counter in template",()=>{
-    
-    //access btn tag
-   let btn= fixture.debugElement.query(By.css("#inc"))
-    //fire click event
-    btn.triggerEventHandler("click")
-    btn.triggerEventHandler("click")
-    btn.triggerEventHandler("click")
-    //assert change in p tag
-    fixture.detectChanges()
-    let p= fixture.nativeElement.querySelector("p")
-    expect(p.textContent).toContain("3")
+  it("should render counter =0 ",async ()=>{
+    await fixture.whenStable()
+    //access <p>
+    let p= fixture.debugElement.query(By.css("p"))
+    //assert
+    expect(p.nativeElement.textContent).toContain("0")
   })
-  it("should decrease counter when click btn - then render counter in template",()=>{
-    
-    //access btn tag
-  //  let btn= fixture.debugElement.query(By.css("#inc"))
-  //   //fire click event
-  //   btn.triggerEventHandler("click")
-  //   btn.triggerEventHandler("click")
-  //   btn.triggerEventHandler("click")
+  it('should render counter after clicking btn+', async () => {
+    //access btn
+    let btnIncrease=fixture.debugElement.query(By.css("#increment"))
+    let btnDecrease=fixture.debugElement.query(By.css("#decrement"))
+    //click btn
+    btnIncrease.triggerEventHandler("click")
+    btnIncrease.triggerEventHandler("click")
+    btnIncrease.triggerEventHandler("click")
 
-    let btnDec= fixture.debugElement.query(By.css("#dec"))
-    btnDec.triggerEventHandler("click")
-    //assert change in p tag
-    fixture.detectChanges()
-    let p= fixture.nativeElement.querySelector("p")
-    expect(p.textContent).toContain("-1")
-  })
+    btnDecrease.triggerEventHandler("click")
+    btnDecrease.triggerEventHandler("click")
+
+   await fixture.whenStable()
+    //access p
+    let p= fixture.debugElement.query(By.css("p"))
+
+    //assert counter+
+    expect(component.counter()).toBe(1)
+    expect(p.nativeElement.textContent).toContain("1")
+
+  });
 });
